@@ -1,12 +1,15 @@
-const express = require('express');
 const path = require('path');
+const express = require('express');
+const multer  = require('multer')
+
 const app = express();
+const upload = multer({ dest: 'uploads/' })
 
 app.set('view engine', 'ejs');
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/convert', (req, res, next) => {
-  
+
   res.send('ok');
 });
 
