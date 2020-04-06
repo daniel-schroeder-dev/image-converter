@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "description": "Convert an image to JPEG, PNG, or Webp.",
   "main": "index.js",
+  "engines": {
+    "node": "12.x"
+  },
   "scripts": {
+    "start": "node index.js",
     "cleanup": "rm -rf ./uploads/*"
   },
   "repository": {

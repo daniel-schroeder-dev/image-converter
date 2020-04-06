@@ -5,6 +5,8 @@ const multer  = require('multer')
 const morgan = require('morgan');
 const sharp = require('sharp');
 
+const port = process.env.PORT || 8080;
+
 const app = express();
 const upload = multer({ dest: 'uploads/' })
 
@@ -46,6 +48,6 @@ app.get('/downloads/:id', (req, res, next) => {
   res.render('download', { id: req.params.id });
 });
 
-app.listen(8080, () => {
-  console.log('Express up at: 8080');
+app.listen(PORT, () => {
+  console.log('Express up at: ', PORT);
 });
