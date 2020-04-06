@@ -10,6 +10,7 @@ app.set('view engine', 'ejs');
 
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.post('/convert', upload.single('image-upload'), (req, res, next) => {
   console.log(req.file.filename);
