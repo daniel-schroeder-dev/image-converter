@@ -39,12 +39,32 @@ const ensureConvertedDirExists = () => {
 };
 
 const createFileName = name => {
-  return `${path.parse(name).name}__${uuidv4()}__${Date.now()}.webp`;
+  return `${path.parse(name).name}__${Date.now()}__${uuidv4()}__.webp`;
 };
 
 const parseFileName = fileName => {
   return fileName.split('__')[0] + path.parse(fileName).ext;
 };
+
+const getTimeStamp = fileName => {
+  return fileName.split('__')[1];
+};
+
+const calculateAgeOfFile = fileName => {
+  Math.floor((Date.now() - getTimeStamp(fileName)) / 1000 / 60);
+};
+
+const cron = (name, interval, cb) => {
+  setInterval(() => {
+    console.log('Running cron job: ', name);
+    cb();
+  }, interval);
+};
+
+// cron('Wipe converted folder', 1000, () => {
+//   console.log('callback');
+// });
+
 
 app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
 
