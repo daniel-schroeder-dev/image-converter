@@ -13,11 +13,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/convert', upload.single('image-upload'), (req, res, next) => {
   console.log(req.file.filename);
-  res.redirect(303, '/');
+  res.redirect(303, `/downloads/${req.file.filename}`);
 });
 
 app.get('/', (req, res, next) => {
   res.render('index');
+});
+
+app.get('/downloads/:id', (req, res, next) => {
+  res.render('download', { id: req.params.id });
 });
 
 app.listen(8080, () => {
