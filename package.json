@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/daniel-schroeder-dev/image-converter#readme",
   "dependencies": {
+    "ejs": "^3.0.2",
     "express": "^4.17.1"
   },
   "devDependencies": {
