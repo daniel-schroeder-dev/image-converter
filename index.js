@@ -62,13 +62,14 @@ const cron = (name, interval, cb) => {
 };
 
 const WIPE_FOLDER_INTERVAL = 900000; // 15 minutes 
+const WIPE_FILE_INTERVAL = 300000; // 5 minutes
 
 cron('Wipe converted folder', WIPE_FOLDER_INTERVAL, () => {
   fs.readdir(convertedDir, { withFileTypes: true }, (err, files) => {
     if (err) return console.error(err);
     if (!files.length) return console.log('converted dir empty, no need to wipe');
     files.forEach(file => {
-      if (calculateAgeOfFile(file.name) >= 1) {
+      if (calculateAgeOfFile(file.name) >= WIPE_FILE_INTERVAL) {
         fs.unlink(`${convertedDir}/${file.name}`, err => {
           if (err) return console.error(err);
           console.log(`${file.name} was deleted`);
@@ -109,6 +110,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/downloads/:fileName', (req, res, next) => {
+  // res.download(`${convertedDir}/${req.params.fileName}`);
   res.render('download', { fileName: req.params.fileName, downloadName: parseFileName(req.params.fileName) });
 });
 
