@@ -5,7 +5,7 @@ const multer  = require('multer')
 const morgan = require('morgan');
 const sharp = require('sharp');
 
-const port = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8080;
 
 const app = express();
 const upload = multer({ dest: 'uploads/' })
