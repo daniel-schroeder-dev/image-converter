@@ -4,7 +4,7 @@
   "description": "Convert an image to JPEG, PNG, or Webp.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "cleanup": "rm -rf ./uploads/*"
   },
   "repository": {
     "type": "git",
