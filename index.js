@@ -1,3 +1,4 @@
+const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const multer  = require('multer')
@@ -16,15 +17,24 @@ app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/image', express.static(path.join(__dirname, 'converted')));
 
+const removeUpload = filename => {
+  const fileToRemovePath = `${uploadsDir}/${filename}`;
+  fs.unlink(fileToRemovePath, err => {
+    if (err) console.error(err);
+    console.log(`Removed ${fileToRemovePath}`);
+  });
+};
+
 app.post('/convert', upload.single('image-upload'), (req, res, next) => {
   
   sharp(`${uploadsDir}/${req.file.filename}`)
     .webp({ lossless: true })
     .toFile(`${convertedDir}/${req.file.filename}.webp`)
-    .then(info => console.log(info))
+    .then(info => {
+      removeUpload(req.file.filename);
+      res.redirect(303, `/downloads/${req.file.filename}`);
+    })
     .catch(console.error);
-
-  res.redirect(303, `/downloads/${req.file.filename}`);
 
 });
 
