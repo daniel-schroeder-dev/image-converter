@@ -61,8 +61,8 @@ const cron = (name, interval, cb) => {
   }, interval);
 };
 
-const WIPE_FOLDER_INTERVAL = 900000; // 15 minutes 
-const WIPE_FILE_INTERVAL = 300000; // 5 minutes
+const WIPE_FOLDER_INTERVAL = 300000; // 5 minutes 
+const WIPE_FILE_INTERVAL = 900000; // 15 minutes
 
 cron('Wipe converted folder', WIPE_FOLDER_INTERVAL, () => {
   fs.readdir(convertedDir, { withFileTypes: true }, (err, files) => {
