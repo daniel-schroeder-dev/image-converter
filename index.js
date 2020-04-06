@@ -8,9 +8,9 @@ const sharp = require('sharp');
 const PORT = process.env.PORT || 8080;
 
 const app = express();
-const upload = multer({ dest: 'uploads/' })
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
-const uploadsDir = path.join(__dirname, 'uploads');
 const convertedDir = path.join(__dirname, 'converted');
 
 app.set('view engine', 'ejs');
@@ -18,14 +18,6 @@ app.set('view engine', 'ejs');
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/image', express.static(path.join(__dirname, 'converted')));
-
-const removeUpload = filename => {
-  const fileToRemovePath = `${uploadsDir}/${filename}`;
-  fs.unlink(fileToRemovePath, err => {
-    if (err) console.error(err);
-    console.log(`Removed ${fileToRemovePath}`);
-  });
-};
 
 const ensureConvertedDirExists = () => {
   return new Promise((resolve, reject) => {
@@ -55,13 +47,14 @@ app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
     console.error(e);
   }
 
+  const fileName = path.parse(req.file.originalname).name;
+
   if (convertedDirExists) {
-    sharp(`${uploadsDir}/${req.file.filename}`)
+    sharp(req.file.buffer)
       .webp({ lossless: true })
-      .toFile(`${convertedDir}/${req.file.filename}.webp`)
+      .toFile(`${convertedDir}/${fileName}.webp`)
       .then(info => {
-        removeUpload(req.file.filename);
-        res.redirect(303, `/downloads/${req.file.filename}`);
+        res.redirect(303, `/downloads/${fileName}.webp`);
       })
       .catch(console.error);  
   } else {
@@ -74,8 +67,8 @@ app.get('/', (req, res, next) => {
   res.render('index');
 });
 
-app.get('/downloads/:id', (req, res, next) => {
-  res.render('download', { id: req.params.id });
+app.get('/downloads/:fileName', (req, res, next) => {
+  res.render('download', { fileName: req.params.fileName });
 });
 
 app.listen(PORT, () => {
