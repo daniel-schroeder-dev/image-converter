@@ -27,16 +27,46 @@ const removeUpload = filename => {
   });
 };
 
-app.post('/convert', upload.single('image-upload'), (req, res, next) => {
-  
-  sharp(`${uploadsDir}/${req.file.filename}`)
-    .webp({ lossless: true })
-    .toFile(`${convertedDir}/${req.file.filename}.webp`)
-    .then(info => {
-      removeUpload(req.file.filename);
-      res.redirect(303, `/downloads/${req.file.filename}`);
-    })
-    .catch(console.error);
+const ensureConvertedDirExists = () => {
+  return new Promise((resolve, reject) => {
+    fs.stat(convertedDir, (err, stat) => {
+      if (err || !stat) {
+        fs.mkdir(path.join(__dirname, 'converted'), err => {
+          if (err) {
+            console.error(err);
+            return reject(false);
+          }
+          return resolve(true);
+        });
+      } else {
+        return resolve(stat.isDirectory());
+      }
+    });
+  });
+};
+
+app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
+
+  let convertedDirExists;
+
+  try {
+    convertedDirExists = await ensureConvertedDirExists();
+  } catch(e) {
+    console.error(e);
+  }
+
+  if (convertedDirExists) {
+    sharp(`${uploadsDir}/${req.file.filename}`)
+      .webp({ lossless: true })
+      .toFile(`${convertedDir}/${req.file.filename}.webp`)
+      .then(info => {
+        removeUpload(req.file.filename);
+        res.redirect(303, `/downloads/${req.file.filename}`);
+      })
+      .catch(console.error);  
+  } else {
+    res.redirect(303, '/');
+  }
 
 });
 

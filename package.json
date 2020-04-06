@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node index.js",
-    "cleanup": "rm -rf ./uploads/*"
+    "cleanup": "rm -rf ./uploads/* ./converted/*"
   },
   "repository": {
     "type": "git",
