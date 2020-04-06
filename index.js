@@ -51,7 +51,7 @@ const getTimeStamp = fileName => {
 };
 
 const calculateAgeOfFile = fileName => {
-  Math.floor((Date.now() - getTimeStamp(fileName)) / 1000 / 60);
+  return Math.floor((Date.now() - getTimeStamp(fileName)) / 1000 / 60);
 };
 
 const cron = (name, interval, cb) => {
@@ -61,10 +61,22 @@ const cron = (name, interval, cb) => {
   }, interval);
 };
 
-// cron('Wipe converted folder', 1000, () => {
-//   console.log('callback');
-// });
+const WIPE_FOLDER_INTERVAL = 900000; // 15 minutes 
 
+cron('Wipe converted folder', WIPE_FOLDER_INTERVAL, () => {
+  fs.readdir(convertedDir, { withFileTypes: true }, (err, files) => {
+    if (err) return console.error(err);
+    if (!files.length) return console.log('converted dir empty, no need to wipe');
+    files.forEach(file => {
+      if (calculateAgeOfFile(file.name) >= 1) {
+        fs.unlink(`${convertedDir}/${file.name}`, err => {
+          if (err) return console.error(err);
+          console.log(`${file.name} was deleted`);
+        });
+      }
+    });
+  });
+});
 
 app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
 
