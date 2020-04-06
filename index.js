@@ -11,7 +11,7 @@ app.set('view engine', 'ejs');
 app.use(morgan('dev'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.post('/convert', upload.single('image'), (req, res, next) => {
+app.post('/convert', upload.single('image-upload'), (req, res, next) => {
   console.log(req.file.filename);
   res.redirect(303, '/');
 });
