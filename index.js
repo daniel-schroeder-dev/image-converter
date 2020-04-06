@@ -4,6 +4,7 @@ const express = require('express');
 const multer  = require('multer')
 const morgan = require('morgan');
 const sharp = require('sharp');
+const { v4: uuidv4 } = require('uuid')
 
 const PORT = process.env.PORT || 8080;
 
@@ -37,6 +38,14 @@ const ensureConvertedDirExists = () => {
   });
 };
 
+const createFileName = name => {
+  return `${path.parse(name).name}__${uuidv4()}.webp`;
+};
+
+const parseFileName = fileName => {
+  return fileName.split('__')[0] + path.parse(fileName).ext;
+};
+
 app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
 
   let convertedDirExists;
@@ -47,14 +56,14 @@ app.post('/convert', upload.single('image-upload'), async (req, res, next) => {
     console.error(e);
   }
 
-  const fileName = path.parse(req.file.originalname).name;
+  const fileName = createFileName(req.file.originalname);
 
   if (convertedDirExists) {
     sharp(req.file.buffer)
       .webp({ lossless: true })
-      .toFile(`${convertedDir}/${fileName}.webp`)
+      .toFile(`${convertedDir}/${fileName}`)
       .then(info => {
-        res.redirect(303, `/downloads/${fileName}.webp`);
+        res.redirect(303, `/downloads/${fileName}`);
       })
       .catch(console.error);  
   } else {
@@ -68,7 +77,7 @@ app.get('/', (req, res, next) => {
 });
 
 app.get('/downloads/:fileName', (req, res, next) => {
-  res.render('download', { fileName: req.params.fileName });
+  res.render('download', { fileName: req.params.fileName, downloadName: parseFileName(req.params.fileName) });
 });
 
 app.listen(PORT, () => {
