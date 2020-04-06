@@ -39,7 +39,7 @@ const ensureConvertedDirExists = () => {
 };
 
 const createFileName = name => {
-  return `${path.parse(name).name}__${uuidv4()}.webp`;
+  return `${path.parse(name).name}__${uuidv4()}__${Date.now()}.webp`;
 };
 
 const parseFileName = fileName => {
